@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+concurrency: release
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read versions
+        id: v
+        run: |
+          echo "version=$(tr -d '[:space:]' < VERSION)" >> "$GITHUB_OUTPUT"
+          echo "mediapipe=$(tr -d '[:space:]' < MEDIAPIPE_VERSION)" >> "$GITHUB_OUTPUT"
+
+      - name: Refuse to release an existing version
+        run: |
+          if git ls-remote --exit-code --tags origin "${{ steps.v.outputs.version }}" >/dev/null; then
+            echo "Tag ${{ steps.v.outputs.version }} already exists. Bump VERSION." >&2
+            exit 1
+          fi
+
+      - name: Rebuild the xcframeworks
+        run: Scripts/refresh_artifacts.sh
+
+      - name: Build the release assets and write the checksums
+        run: Scripts/make_release.sh
+
+      - name: Commit the checksums
+        run: |
+          git config user.name "stripe-ci"
+          git config user.email "support+github@stripe.com"
+          git add Package.swift StripeMediaPipe.podspec
+          git diff --cached --quiet || git commit -m "Release ${{ steps.v.outputs.version }}"
+          git push origin HEAD:${{ github.ref_name }}
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.v.outputs.version }}" Dist/* \
+            --target "$(git rev-parse HEAD)" \
+            --title "${{ steps.v.outputs.version }}" \
+            --notes "MediaPipeTasksVision ${{ steps.v.outputs.mediapipe }}"
+
+      - name: Push the pod
+        if: env.COCOAPODS_TRUNK_TOKEN != ''
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: pod trunk push StripeMediaPipe.podspec --allow-warnings
