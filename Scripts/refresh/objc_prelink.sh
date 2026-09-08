@@ -58,7 +58,8 @@ prelink_one_archive() {
     -o "${work}/objc.o" "${merge[@]}"
 
   xcrun libtool -static -o "${work}/new.a" "${work}/objc.o" ${keep[@]+"${keep[@]}"} 2>/dev/null
-  cp "${work}/new.a" "${archive}"
+  # the graph artifact is written read-only, so replace the file rather than write into it
+  cp -f "${work}/new.a" "${archive}"
 
   echo "  ${label}: merged $(wc -l < "${work}/forced.txt" | tr -d ' ') Objective-C members"
   rm -rf "${work}"
