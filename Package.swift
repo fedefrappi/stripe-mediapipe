@@ -2,7 +2,7 @@
 import PackageDescription
 
 let version = "1.0.0"
-let assets = "https://github.com/fedefrappi/stripe-mediapipe/releases/download/\(version)"
+let assets = "https://github.com/stripe/stripe-ios-mediapipe/releases/download/\(version)"
 
 let package = Package(
     name: "MediaPipeSPM",

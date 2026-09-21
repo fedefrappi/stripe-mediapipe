@@ -5,11 +5,11 @@ Pod::Spec.new do |s|
 
   s.summary                  = 'MediaPipe Tasks Vision, packaged for the Stripe iOS SDK.'
   s.license                  = { type: 'Apache-2.0', file: 'LICENSE-MediaPipe' }
-  s.homepage                 = 'https://github.com/fedefrappi/stripe-mediapipe'
+  s.homepage                 = 'https://github.com/stripe/stripe-ios-mediapipe'
   s.authors                  = { 'Stripe' => 'support+github@stripe.com' }
 
   s.source                   = {
-    http: "https://github.com/fedefrappi/stripe-mediapipe/releases/download/#{s.version}/StripeMediaPipe-#{s.version}.zip"
+    http: "https://github.com/stripe/stripe-ios-mediapipe/releases/download/#{s.version}/StripeMediaPipe-#{s.version}.zip"
   }
 
   s.platform                 = :ios
