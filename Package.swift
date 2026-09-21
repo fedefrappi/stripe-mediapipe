@@ -51,17 +51,17 @@ let package = Package(
         .binaryTarget(
             name: "MediaPipeTasksVision",
             url: "\(assets)/MediaPipeTasksVision.xcframework.zip",
-            checksum: "8c1038dd24d8b0e72dfc4a7891f7f4367e53484345d223d35e85797859b9e961"
+            checksum: "3dcc943a34f7030b96642fac31445774e6fbdc3fe9e9fb07a0a55cdda280befe"
         ),
         .binaryTarget(
             name: "MediaPipeCommonGraphLibraries",
             url: "\(assets)/MediaPipeCommonGraphLibraries.xcframework.zip",
-            checksum: "09d55d7dc4fe74c571fdc3650fd90513de19fdaea033e5f8dc9a7cae712fd411"
+            checksum: "a846be9722d833fa7a527eeac3c50efeb036d4de7e59afbfce725a627b628984"
         ),
         .binaryTarget(
             name: "MediaPipeTasksCommon",
             url: "\(assets)/MediaPipeTasksCommon.xcframework.zip",
-            checksum: "786e8d8768963b807b73ff158033cfa2d796dcb82a5854b794b7285742b8fe78"
+            checksum: "35e2bb263416ece83ad6186efea9846c4bc90ca744d6ca4adfba699f6f86bdd5"
         ),
     ]
 )
