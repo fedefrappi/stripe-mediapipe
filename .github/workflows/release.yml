@@ -11,6 +11,8 @@ permissions:
 jobs:
   release:
     runs-on: macos-15
+    env:
+      HAS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v5
 
@@ -51,7 +53,11 @@ jobs:
             --notes "MediaPipeTasksVision ${{ steps.v.outputs.mediapipe }}"
 
       - name: Push the pod
-        if: env.COCOAPODS_TRUNK_TOKEN != ''
+        if: env.HAS_TRUNK_TOKEN == 'true'
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
-        run: pod trunk push StripeMediaPipe.podspec --allow-warnings
+        run: |
+          pod trunk push StripeMediaPipe.podspec --allow-warnings && exit 0
+          # Trunk sometimes errors after publishing, so only fail if the version is missing.
+          pod trunk info StripeMediaPipe | grep -qF -- "- ${{ steps.v.outputs.version }} ("
+          echo "::warning::pod trunk push failed, but StripeMediaPipe ${{ steps.v.outputs.version }} is published."

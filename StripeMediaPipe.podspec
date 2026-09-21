@@ -20,7 +20,12 @@ Pod::Spec.new do |s|
 
   s.source_files             = 'Sources/MediaPipeSPMGraphReferences/**/*.{c,h}'
   s.private_header_files     = 'Sources/MediaPipeSPMGraphReferences/**/*.h'
-  s.pod_target_xcconfig      = { 'OTHER_LDFLAGS' => '$(inherited) -ObjC' }
+  # The frameworks ship no x86_64 simulator slice.
+  s.pod_target_xcconfig      = {
+    'OTHER_LDFLAGS' => '$(inherited) -ObjC',
+    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'x86_64',
+  }
+  s.user_target_xcconfig     = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
   s.vendored_frameworks      = [
     'Artifacts/MediaPipeCommonGraphLibraries.xcframework',
     'Artifacts/MediaPipeTasksCommon.xcframework',

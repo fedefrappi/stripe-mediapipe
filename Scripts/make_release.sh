@@ -14,6 +14,15 @@ missing=0
 while IFS= read -r framework; do
   [ -f "$framework/Info.plist" ] || { echo "error: $framework has no Info.plist" >&2; missing=1; }
 done < <(find "$ARTIFACTS" -type d -name "*.framework")
+while IFS= read -r plist; do
+  xcframework="$(dirname "$plist")"
+  count="$(plutil -extract AvailableLibraries raw "$plist")"
+  for ((i = 0; i < count; i++)); do
+    id="$(plutil -extract "AvailableLibraries.$i.LibraryIdentifier" raw "$plist")"
+    path="$(plutil -extract "AvailableLibraries.$i.LibraryPath" raw "$plist")"
+    [ -e "$xcframework/$id/$path" ] || { echo "error: $plist lists $id/$path, which does not exist" >&2; missing=1; }
+  done
+done < <(find "$ARTIFACTS" -path "*.xcframework/Info.plist")
 [ "$missing" -eq 0 ] || { echo "Run Scripts/refresh_artifacts.sh to rebuild the artifacts." >&2; exit 1; }
 
 rm -rf "$DIST" && mkdir -p "$DIST"

@@ -73,11 +73,21 @@ strip_intel_simulator_slice() {
     run_command mv "${old_slice_dir}" "${new_slice_dir}"
   fi
 
-  run_command /usr/libexec/PlistBuddy -c "Set :AvailableLibraries:1:LibraryIdentifier ${new_identifier}" "${plist_path}"
+  # xcodebuild does not order AvailableLibraries, so look up the simulator entry.
+  local index=0
+  until [[ "$(/usr/libexec/PlistBuddy -c "Print :AvailableLibraries:${index}:SupportedPlatformVariant" "${plist_path}" 2>/dev/null)" == "simulator" ]]; do
+    if ! /usr/libexec/PlistBuddy -c "Print :AvailableLibraries:${index}" "${plist_path}" >/dev/null 2>&1; then
+      echo "error: no simulator library in ${plist_path}" >&2
+      exit 1
+    fi
+    index=$((index + 1))
+  done
 
-  if /usr/libexec/PlistBuddy -c "Print :AvailableLibraries:1:SupportedArchitectures:1" "${plist_path}" >/dev/null 2>&1; then
-    run_command /usr/libexec/PlistBuddy -c "Delete :AvailableLibraries:1:SupportedArchitectures:1" "${plist_path}"
-  fi
+  local library=":AvailableLibraries:${index}"
+  run_command /usr/libexec/PlistBuddy -c "Set ${library}:LibraryIdentifier ${new_identifier}" "${plist_path}"
+  run_command /usr/libexec/PlistBuddy -c "Delete ${library}:SupportedArchitectures" "${plist_path}"
+  run_command /usr/libexec/PlistBuddy -c "Add ${library}:SupportedArchitectures array" "${plist_path}"
+  run_command /usr/libexec/PlistBuddy -c "Add ${library}:SupportedArchitectures:0 string arm64" "${plist_path}"
 }
 
 require_file() {
