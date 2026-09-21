@@ -1,4 +1,4 @@
-# stripe-mediapipe
+# stripe-ios-mediapipe
 
 MediaPipe face landmarker for the Stripe iOS SDK, included through the
 `Identity` package trait of `stripe-ios-spm` or the `StripeIdentity` pod.
@@ -36,3 +36,9 @@ Scripts/make_release.sh
 
 Commit the updated `Package.swift` and `StripeMediaPipe.podspec`, then run the
 publishing commands printed by `make_release.sh`.
+
+## License
+
+The code in this repository is available under the MIT license. See `LICENSE`.
+MediaPipe is licensed under the Apache License, Version 2.0. See
+`LICENSE-MediaPipe`.
